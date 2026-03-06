@@ -25,13 +25,6 @@ export default function ReactionBar({
             origin: { y: 0.6 }
         });
 
-        // // confetti burst
-        // confetti({
-        //   particleCount: 60,
-        //   spread: 70,
-        //   origin: { y: 0.7 }
-        // });
-
         // emoji animation
         gsap.fromTo(
             `.emoji-${emoji}`,

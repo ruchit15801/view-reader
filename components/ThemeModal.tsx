@@ -3,33 +3,40 @@
 export default function ThemeModal({
   setTheme,
   close
-}:{
-  setTheme:(t:string)=>void
-  close:()=>void
-}){
+}: {
+  setTheme: (t: string) => void
+  close: () => void
+}) {
 
-  return(
+  return (
 
-    <div className="fixed bottom-28 left-1/2 -translate-x-1/2 bg-[#1a1a1a] p-4 rounded-xl flex gap-4">
+    <div className="fixed bottom-28 left-1/2 -translate-x-1/2 bg-[#1a1a1a] text-white p-4 rounded-xl flex gap-4">
 
       <button
-        onClick={()=>setTheme("light")}
+        onClick={() => setTheme("light")}
         className="bg-white text-black px-4 py-2 rounded"
       >
         Light
       </button>
 
       <button
-        onClick={()=>setTheme("dark")}
+        onClick={() => setTheme("dark")}
         className="bg-black text-white border px-4 py-2 rounded"
       >
         Dark
       </button>
 
-      <button onClick={close}>✕</button>
+
+      <button
+        onClick={() => setTheme("paper")}
+        className="bg-[#efe6c9] text-black px-4 py-2 rounded"
+      >
+        Paper Mode
+      </button>
+
+      <button onClick={close} className="text-white text-xl">✕</button>
 
     </div>
 
   )
-
 }
