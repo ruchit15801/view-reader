@@ -195,23 +195,24 @@ export default function ReaderPage({ children }: { children: React.ReactNode }) 
 
             {/* STORY */}
 
-            <div
-                ref={storyRef}
-                className={`reader-content-panel max-w-4xl mx-auto pb-24 pt-10 px-6 leading-8 rounded-2xl mt-6 ${
-                    theme === "dark"
-                        ? "reader-panel-dark text-white"
-                        : theme === "paper"
-                            ? "reader-panel-paper text-black"
-                            : "reader-panel-light text-black"
-                }`}
-
-                style={{ fontSize }}
-            >
-                {contentHtml ? (
-                    <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
-                ) : (
-                    children
-                )}
+            <div className={`reader-panel-wrap ${theme === "dark" ? "reader-panel-wrap-dark" : theme === "paper" ? "reader-panel-wrap-paper" : "reader-panel-wrap-light"}`}>
+                <div
+                    ref={storyRef}
+                    className={`reader-content-panel max-w-4xl mx-auto pb-24 pt-12 px-7 leading-8 rounded-2xl mt-6 ${
+                        theme === "dark"
+                            ? "reader-panel-dark text-white"
+                            : theme === "paper"
+                                ? "reader-panel-paper text-black"
+                                : "reader-panel-light text-black"
+                    }`}
+                    style={{ fontSize }}
+                >
+                    {contentHtml ? (
+                        <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
+                    ) : (
+                        children
+                    )}
+                </div>
             </div>
 
             {/* CONTROLS */}
