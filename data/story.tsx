@@ -15,37 +15,6 @@ export const WickedResonanceStory = () => {
                 Table of Contents
             </h3>
 
-            <ul className="text-blue-600 mb-10">
-                <li>Chapter One</li>
-                <li>Chapter Two</li>
-                <li>Chapter Three</li>
-                <li>Chapter Four</li>
-                <li>Chapter Five</li>
-                <li>Chapter Six</li>
-                <li>Chapter Seven</li>
-                <li>Chapter Eight</li>
-                <li>Chapter Nine</li>
-                <li>Chapter Ten</li>
-                <li>Chapter Eleven</li>
-                <li>Chapter Twelve</li>
-                <li>Chapter Thirteen</li>
-                <li>Chapter Fourteen</li>
-                <li>Chapter Fifteen</li>
-                <li>Chapter Sixteen</li>
-                <li>Chapter Seventeen</li>
-                <li>Chapter Eighteen</li>
-                <li>Chapter Nineteen</li>
-                <li>Chapter Twenty</li>
-                <li>Chapter Twenty-One</li>
-                <li>Chapter Twenty-Two</li>
-                <li>Chapter Twenty-Three</li>
-                <li>Chapter Twenty-Four</li>
-                <li>Chapter Twenty-Five</li>
-                <li>Chapter Twenty-Six</li>
-                <li>Chapter Twenty-Seven</li>
-                <li>Chapter Twenty-Eight</li>
-            </ul>
-
             <div className="text-center my-8">
                 ━━━━༻❁༺━━━━
             </div>

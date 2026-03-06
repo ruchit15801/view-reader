@@ -4,12 +4,13 @@ import ReaderControls from "@/components/ReaderControls";
 import FontModal from "@/components/FontModal";
 import ThemeModal from "@/components/ThemeModal";
 import useScrollProgress from "@/hooks/useScrollProgress";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useTextSelection from "@/hooks/useTextSelection";
 import ReactionPopup from "./ReactionPopup";
 import confetti from "canvas-confetti";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import ReaderBackground from "./ReaderBackground";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -24,31 +25,6 @@ export default function ReaderPage({ children }: { children: React.ReactNode }) 
     const storyRef = useRef<HTMLDivElement | null>(null);
     const [contentHtml, setContentHtml] = useState<string | null>(null);
     const triggersRef = useRef<ScrollTrigger[]>([]);
-
-    const bg = useMemo(() => {
-        if (theme === "dark") {
-            return {
-                className: "bg-black",
-                style: undefined as React.CSSProperties | undefined,
-                overlayClassName: "bg-black/40"
-            };
-        }
-
-        if (theme === "paper") {
-            return {
-                className: "bg-[#efe6c9]",
-                style: { backgroundImage: "url(/bg.jpg)" } as React.CSSProperties,
-                overlayClassName: "bg-[#efe6c9]/60"
-            };
-        }
-
-        // light
-        return {
-            className: "bg-[#F7F7F7]",
-            style: { backgroundImage: "url(/bg1.png)" } as React.CSSProperties,
-            overlayClassName: "bg-white/70"
-        };
-    }, [theme]);
 
     const attachScrollAnimation = (node: HTMLElement, index = 0) => {
 
@@ -215,25 +191,19 @@ export default function ReaderPage({ children }: { children: React.ReactNode }) 
     return (
 
         <div className={theme === "dark" ? "text-white min-h-screen" : "text-black min-h-screen"}>
-            {/* FIXED BACKGROUND (image like your screenshot) */}
-            <div
-                className={`fixed inset-0 -z-10 bg-center bg-cover ${bg.className}`}
-                style={bg.style}
-            >
-                <div className={`absolute inset-0 ${bg.overlayClassName}`} />
-            </div>
+            <ReaderBackground theme={theme} />
 
             {/* STORY */}
 
             <div
                 ref={storyRef}
-                className={`max-w-4xl mx-auto pb-24 pt-10 px-6 leading-8 ${
+                className={`reader-content-panel max-w-4xl mx-auto pb-24 pt-10 px-6 leading-8 rounded-2xl mt-6 ${
                     theme === "dark"
-                        ? "bg-black/30"
+                        ? "reader-panel-dark text-white"
                         : theme === "paper"
-                            ? "bg-[#efe6c9]/40"
-                            : "bg-white/35"
-                } backdrop-blur-[2px] rounded-2xl mt-6`}
+                            ? "reader-panel-paper text-black"
+                            : "reader-panel-light text-black"
+                }`}
 
                 style={{ fontSize }}
             >
