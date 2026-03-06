@@ -1,28 +1,47 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function useScrollProgress() {
 
-  const [progress,setProgress] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const rafRef = useRef<number | null>(null);
+  const lastRef = useRef<number>(-1);
 
   useEffect(()=>{
 
-    const handleScroll = () => {
-
+    const compute = () => {
       const scrollTop = window.scrollY;
-
       const height =
         document.documentElement.scrollHeight -
         document.documentElement.clientHeight;
 
-      const percent = (scrollTop / height) * 100;
+      const raw = height <= 0 ? 0 : (scrollTop / height) * 100;
+      const next = Math.max(0, Math.min(100, raw));
 
-      setProgress(percent);
-
+      // Avoid re-render spam; 0.1% granularity is plenty.
+      const rounded = Math.round(next * 10) / 10;
+      if (rounded !== lastRef.current) {
+        lastRef.current = rounded;
+        setProgress(rounded);
+      }
     };
 
-    window.addEventListener("scroll",handleScroll);
+    const schedule = () => {
+      if (rafRef.current != null) return;
+      rafRef.current = requestAnimationFrame(() => {
+        rafRef.current = null;
+        compute();
+      });
+    };
 
-    return () => window.removeEventListener("scroll",handleScroll);
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    compute();
+
+    return () => {
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
+    };
 
   },[]);
 

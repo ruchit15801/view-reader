@@ -4,17 +4,16 @@ import ReaderControls from "@/components/ReaderControls";
 import FontModal from "@/components/FontModal";
 import ThemeModal from "@/components/ThemeModal";
 import useScrollProgress from "@/hooks/useScrollProgress";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import useTextSelection from "@/hooks/useTextSelection";
 import ReactionPopup from "./ReactionPopup";
 import confetti from "canvas-confetti";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { WickedResonanceStory } from "@/data/story";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function ReaderPage() {
+export default function ReaderPage({ children }: { children: React.ReactNode }) {
 
     const progress = useScrollProgress();
     const { range, clearSelection } = useTextSelection()
@@ -23,6 +22,33 @@ export default function ReaderPage() {
     const [showTheme, setShowTheme] = useState(false);
     const [theme, setTheme] = useState("light");
     const storyRef = useRef<HTMLDivElement | null>(null);
+    const [contentHtml, setContentHtml] = useState<string | null>(null);
+    const triggersRef = useRef<ScrollTrigger[]>([]);
+
+    const bg = useMemo(() => {
+        if (theme === "dark") {
+            return {
+                className: "bg-black",
+                style: undefined as React.CSSProperties | undefined,
+                overlayClassName: "bg-black/40"
+            };
+        }
+
+        if (theme === "paper") {
+            return {
+                className: "bg-[#efe6c9]",
+                style: { backgroundImage: "url(/bg.jpg)" } as React.CSSProperties,
+                overlayClassName: "bg-[#efe6c9]/60"
+            };
+        }
+
+        // light
+        return {
+            className: "bg-[#F7F7F7]",
+            style: { backgroundImage: "url(/bg1.png)" } as React.CSSProperties,
+            overlayClassName: "bg-white/70"
+        };
+    }, [theme]);
 
     const attachScrollAnimation = (node: HTMLElement, index = 0) => {
 
@@ -41,40 +67,43 @@ export default function ReaderPage() {
             )
         }
 
-        ScrollTrigger.create({
+        const trigger = ScrollTrigger.create({
             trigger: node,
             start: "top 80%",
             onEnter: animate,
             onEnterBack: animate
         })
+        triggersRef.current.push(trigger);
 
     }
 
     useEffect(() => {
 
-        if (!storyRef.current) return
+        const saved = localStorage.getItem("reader-content");
+        if (saved) setContentHtml(saved);
+    }, []);
 
-        const saved = localStorage.getItem("reader-content")
+    useEffect(() => {
+        if (!storyRef.current) return;
 
-        if (saved) {
-            setTimeout(() => {
-                if (storyRef.current) {
-                    storyRef.current.innerHTML = saved
+        // kill old triggers before re-creating
+        triggersRef.current.forEach((t) => t.kill());
+        triggersRef.current = [];
 
-                    const nodes = storyRef.current.querySelectorAll(".reaction-emoji")
+        const nodes = storyRef.current.querySelectorAll(".reaction-emoji");
+        nodes.forEach((n, i) => {
+            if (n instanceof HTMLElement) attachScrollAnimation(n, i);
+        });
 
-                    nodes.forEach((n, i) => {
-                        if (n instanceof HTMLElement) {
-                            attachScrollAnimation(n, i)
-                        }
-                    })
+        requestAnimationFrame(() => ScrollTrigger.refresh());
+    }, [contentHtml]);
 
-                    ScrollTrigger.refresh()
-                }
-            }, 0)
-        }
-
-    }, [])
+    useEffect(() => {
+        return () => {
+            triggersRef.current.forEach((t) => t.kill());
+            triggersRef.current = [];
+        };
+    }, []);
 
     const addReaction = (emoji: string) => {
 
@@ -165,6 +194,7 @@ export default function ReaderPage() {
             attachScrollAnimation(emojiNode, count)
             const html = storyRef.current?.innerHTML ?? "";
             localStorage.setItem("reader-content", html);
+            setContentHtml(html);
 
         })
 
@@ -184,24 +214,34 @@ export default function ReaderPage() {
 
     return (
 
-        <div className={
-            theme === "dark"
-                ? "bg-black text-white min-h-screen"
-                : theme === "paper"
-                    ? "bg-[#efe6c9] text-black min-h-screen"
-                    : "bg-[#F7F7F7] text-black min-h-screen"
-        }>
+        <div className={theme === "dark" ? "text-white min-h-screen" : "text-black min-h-screen"}>
+            {/* FIXED BACKGROUND (image like your screenshot) */}
+            <div
+                className={`fixed inset-0 -z-10 bg-center bg-cover ${bg.className}`}
+                style={bg.style}
+            >
+                <div className={`absolute inset-0 ${bg.overlayClassName}`} />
+            </div>
 
             {/* STORY */}
 
             <div
                 ref={storyRef}
-                className="max-w-4xl mx-auto pb-24 pt-10 px-6 leading-8"
+                className={`max-w-4xl mx-auto pb-24 pt-10 px-6 leading-8 ${
+                    theme === "dark"
+                        ? "bg-black/30"
+                        : theme === "paper"
+                            ? "bg-[#efe6c9]/40"
+                            : "bg-white/35"
+                } backdrop-blur-[2px] rounded-2xl mt-6`}
 
                 style={{ fontSize }}
             >
-
-                <WickedResonanceStory />
+                {contentHtml ? (
+                    <div dangerouslySetInnerHTML={{ __html: contentHtml }} />
+                ) : (
+                    children
+                )}
             </div>
 
             {/* CONTROLS */}
