@@ -3,6 +3,7 @@
 import ReaderControls from "@/components/ReaderControls";
 import FontModal from "@/components/FontModal";
 import ThemeModal from "@/components/ThemeModal";
+import ReaderBackground from "@/components/ReaderBackground";
 import useScrollProgress from "@/hooks/useScrollProgress";
 import { useEffect, useRef, useState } from "react";
 import useTextSelection from "@/hooks/useTextSelection";
@@ -184,20 +185,26 @@ export default function ReaderPage() {
 
     return (
 
-        <div className={
-            theme === "dark"
-                ? "bg-black text-white min-h-screen"
-                : theme === "paper"
-                    ? "bg-[#efe6c9] text-black min-h-screen"
-                    : "bg-[#F7F7F7] text-black min-h-screen"
-        }>
+        <div
+            className={
+                theme === "dark"
+                    ? "text-white min-h-screen"
+                    : "text-black min-h-screen"
+            }
+        >
+            <ReaderBackground theme={theme} />
 
             {/* STORY */}
 
             <div
                 ref={storyRef}
-                className="max-w-4xl mx-auto pb-24 pt-10 px-6 leading-8"
-
+                className={`reader-content-panel z-10 max-w-4xl mx-auto pb-24 pt-10 px-6 leading-8 rounded-2xl mt-6 ${
+                    theme === "dark"
+                        ? "reader-panel-dark"
+                        : theme === "paper"
+                            ? "reader-panel-paper"
+                            : "reader-panel-light"
+                }`}
                 style={{ fontSize }}
             >
 
